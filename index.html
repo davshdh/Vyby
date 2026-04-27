@@ -2,199 +2,100 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>Buzz Ball - Donation Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podpoř Buzz Ball</title>
     <style>
         :root {
-            --bg-color: #0d0d0d;
-            --card-bg: #1a1a1a;
-            --accent-color: #d881fa;
+            --bg: #000000;
+            --card-bg: #121212;
+            --accent: #d881fa;
             --text-main: #ffffff;
-            --text-dim: #a0a0a0;
+            --text-dim: #888888;
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg);
             color: var(--text-main);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
         }
 
-        .dashboard {
+        .container {
             width: 90%;
             max-width: 400px;
             background: var(--card-bg);
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            border-radius: 40px;
+            padding: 40px 20px;
             text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid #222;
+            box-shadow: 0 20px 50px rgba(216, 129, 250, 0.1);
+        }
+
+        .buzz-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent);
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(216, 129, 250, 0.3);
         }
 
         h1 {
             font-size: 28px;
-            margin-bottom: 5px;
-            letter-spacing: -1px;
-        }
-
-        .subtitle {
-            color: var(--text-dim);
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-
-        /* Kontejner pro kouli */
-        .ball-wrapper {
-            position: relative;
-            width: 220px;
-            height: 220px;
-            margin: 0 auto 30px auto;
-        }
-
-        .buzz-ball {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: #000;
-            border: 2px solid rgba(216, 129, 250, 0.3);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 30px rgba(216, 129, 250, 0.1);
-        }
-
-        /* Tekutina uvnitř */
-        .liquid {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 2%; /* Startovací hodnota */
-            background: linear-gradient(180deg, var(--accent-color) 0%, #8e44ad 100%);
-            transition: height 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
-            z-index: 1;
-        }
-
-        /* Odlesk skla */
-        .glass-shine {
-            position: absolute;
-            top: 15%;
-            left: 15%;
-            width: 30%;
-            height: 30%;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            z-index: 3;
-            filter: blur(5px);
-        }
-
-        .stats-display {
-            position: relative;
-            z-index: 4;
-            font-size: 32px;
             font-weight: 800;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
         }
 
-        .goal-info {
-            display: flex;
-            justify-content: space-between;
-            background: rgba(255,255,255,0.03);
-            padding: 15px;
-            border-radius: 16px;
-            margin-top: 20px;
-        }
-
-        .stat-box {
-            text-align: left;
-        }
-
-        .stat-label {
-            display: block;
-            font-size: 11px;
+        p {
             color: var(--text-dim);
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
-        .stat-value {
-            font-weight: bold;
             font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 35px;
+            padding: 0 20px;
         }
 
         .btn-donate {
-            margin-top: 25px;
-            width: 100%;
-            padding: 15px;
-            border-radius: 12px;
-            border: none;
-            background: var(--accent-color);
-            color: black;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            transition: transform 0.2s;
+            display: inline-block;
+            background: var(--accent);
+            color: #000000;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            padding: 18px 40px;
+            border-radius: 20px;
+            transition: transform 0.2s, filter 0.2s;
+            box-shadow: 0 10px 20px rgba(216, 129, 250, 0.2);
         }
 
         .btn-donate:hover {
-            transform: scale(1.02);
+            transform: scale(1.03);
             filter: brightness(1.1);
+        }
+
+        .btn-donate:active {
+            transform: scale(0.97);
         }
     </style>
 </head>
 <body>
 
-<div class="dashboard">
-    <h1>Buzz Ball</h1>
-    <p class="subtitle">Podpoř stream a naplň drink!</p>
+<div class="container">
+    <img src="https://ibb.co/9HWHdKNH" alt="Buzz Ball" class="buzz-image">
 
-    <div class="ball-wrapper">
-        <div class="buzz-ball">
-            <div class="glass-shine"></div>
-            <div class="liquid" id="liquid"></div>
-            <div class="stats-display" id="percentText">2%</div>
-        </div>
-    </div>
+    <h1>Podpoř stream</h1>
+    
+    <p>Každý váš příspěvek plní nealko <strong>Buzz Ball</strong> přímo na obrazovce! Pomoz mi dosáhnout cíle a pořádně to oslavit.</p>
 
-    <div class="goal-info">
-        <div class="stat-box">
-            <span class="stat-label">Vybráno</span>
-            <span class="stat-value" id="currentVal">10 Kč</span>
-        </div>
-        <div class="stat-box" style="text-align: right;">
-            <span class="stat-label">Cíl</span>
-            <span class="stat-value">500 Kč</span>
-        </div>
-    </div>
-
-    <button class="btn-donate" onclick="addMoney(50)">PŘISPĚT 50 Kč</button>
+    <a href="https://paypal.me/Davisoppxx" target="_blank" class="btn-donate">
+        PŘISPĚT PŘES PAYPAL
+    </a>
 </div>
-
-<script>
-    let current = 10;
-    const goal = 500;
-
-    function updateUI() {
-        const percent = Math.floor((current / goal) * 100);
-        document.getElementById('liquid').style.height = percent + '%';
-        document.getElementById('percentText').innerText = percent + '%';
-        document.getElementById('currentVal').innerText = current + ' Kč';
-    }
-
-    function addMoney(amount) {
-        current += amount;
-        if (current > goal) current = goal;
-        updateUI();
-    }
-
-    // Inicializace při načtení
-    updateUI();
-</script>
 
 </body>
 </html>
