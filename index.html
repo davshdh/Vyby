@@ -2,128 +2,147 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buzz Ball Donation Goal</title>
+    <title>Buzz Ball Widget</title>
     <style>
-        /* Celkový vzhled stránky (tmavé téma pro stream) */
         body {
-            background-color: #1a1a1a;
+            background-color: transparent; /* Průhledné pro OBS */
             color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Arial', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
+            overflow: hidden;
         }
 
-        h1 {
-            color: #d881fa; /* Fialová barva z tvého obrázku */
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        /* Kontejner pro naši kouli (Buzz Ball) */
-        .buzz-ball-container {
-            width: 250px;
-            height: 250px;
-            border-radius: 50%; /* Udělá z toho kruh */
-            border: 6px solid rgba(255, 255, 255, 0.2);
+        .container {
+            text-align: center;
             position: relative;
-            overflow: hidden; /* Udrží tekutinu uvnitř kruhu */
-            background-color: rgba(0, 0, 0, 0.4);
-            box-shadow: 0 0 20px rgba(216, 129, 250, 0.2);
-            margin-bottom: 30px;
         }
 
-        /* Samotná tekutina v kouli */
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d881fa;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+        }
+
+        /* Skleněná koule */
+        .ball {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.2), 0 0 15px rgba(216, 129, 250, 0.3);
+        }
+
+        /* Tekutina */
         .liquid {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 2%; /* Začínáme na 10 Kč z 500 Kč, což je 2% */
-            background: linear-gradient(to top, #9b59b6, #d881fa); /* Fialový přechod */
-            transition: height 0.8s ease-in-out; /* Plynulá animace plnění */
-            box-shadow: inset 0 10px 10px rgba(255,255,255,0.3);
+            background: linear-gradient(180deg, #d881fa 0%, #8e44ad 100%);
+            height: 2%; /* Start na 10 Kč */
+            transition: height 1s ease-out;
+            z-index: 1;
         }
 
-        /* Efekt vlnky nahoře (volitelné, pro lepší vzhled) */
-        .liquid::after {
-            content: '';
+        /* Bublinky */
+        .bubbles {
             position: absolute;
-            top: -10px;
-            left: 0;
             width: 100%;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
+            height: 100%;
+            z-index: 2;
         }
 
-        /* Text s částkou uprostřed koule */
-        .amount-text {
+        .bubble {
             position: absolute;
+            bottom: -10px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            animation: rise 3s infinite ease-in;
+        }
+
+        @keyframes rise {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-180px) scale(0.5); opacity: 0; }
+        }
+
+        .amount {
+            position: absolute;
+            width: 100%;
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.5rem;
+            transform: translateY(-50%);
+            font-size: 20px;
             font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-            z-index: 10;
-            white-space: nowrap;
+            z-index: 3;
+            text-shadow: 1px 1px 5px black;
         }
 
-        /* Testovací tlačítka */
-        .controls {
-            display: flex;
-            gap: 15px;
-        }
-
-        button {
-            background-color: #d881fa;
-            color: #1a1a1a;
+        .btn-test {
+            margin-top: 20px;
+            padding: 8px 15px;
+            background: #d881fa;
             border: none;
-            padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background 0.3s, transform 0.1s;
-        }
-
-        button:hover {
-            background-color: #e6a8ff;
-        }
-
-        button:active {
-            transform: scale(0.95);
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <h1>Buzz Ball</h1>
-
-    <div class="buzz-ball-container">
+<div class="container">
+    <div class="title">BUZZ BALL</div>
+    <div class="ball">
         <div class="liquid" id="liquid"></div>
+        <div class="bubbles" id="bubbles"></div>
+        <div class="amount" id="counter">10 / 500 Kč</div>
+    </div>
+    <button class="btn-test" onclick="addMoney(50)">Test +50 Kč</button>
+</div>
+
+<script>
+    let current = 10;
+    const goal = 500;
+
+    function addMoney(val) {
+        current += val;
+        if (current > goal) current = goal;
         
-        <div class="amount-text">
-            <span id="currentAmount">10</span> Kč / <span id="goalAmount">500</span> Kč
-        </div>
-    </div>
+        const percent = (current / goal) * 100;
+        document.getElementById('liquid').style.height = percent + '%';
+        document.getElementById('counter').innerText = current + " / " + goal + " Kč";
+        
+        createBubble();
+    }
 
-    <div class="controls">
-        <button onclick="simulateDonate(50)">Donate 50 Kč</button>
-        <button onclick="simulateDonate(100)">Donate 100 Kč</button>
-        <button onclick="resetBall()">Reset</button>
-    </div>
+    function createBubble() {
+        const bubbles = document.getElementById('bubbles');
+        for(let i=0; i<5; i++) {
+            const b = document.createElement('div');
+            b.className = 'bubble';
+            const size = Math.random() * 10 + 5 + 'px';
+            b.style.width = size;
+            b.style.height = size;
+            b.style.left = Math.random() * 100 + '%';
+            b.style.animationDuration = (Math.random() * 2 + 1) + 's';
+            bubbles.appendChild(b);
+            setTimeout(() => b.remove(), 3000);
+        }
+    }
 
-    <script>
-        // Nastavení počátečních hodnot (podle tvého screenu)
-        let current = 10;
-        const goal = 500;
+    // Inicializace
+    addMoney(0);
+</script>
 
-        // Funkce pro aktualizaci grafiky
-        function updateVisual
-          
+</body>
+</html>
